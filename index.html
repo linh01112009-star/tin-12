@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Tin học 12 - Ôn tập Tổng hợp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between">
+
+    <!-- Header -->
+    <header class="bg-indigo-600 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-laptop-code text-2xl"></i>
+                <h1 class="text-xl font-bold tracking-wide">Kiểm tra Tin học 12 (AI, Mạng & Văn hóa mạng)</h1>
+            </div>
+            <div id="timer" class="bg-indigo-700 px-3 py-1.5 rounded-lg text-sm font-semibold flex items-center space-x-2 shadow-inner">
+                <i class="fa-regular fa-clock"></i>
+                <span id="time-left">Đang làm bài...</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 py-8 flex-grow w-full">
+        <!-- Intro Screen -->
+        <div id="intro-screen" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
+            <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">
+                <i class="fa-solid fa-book-open"></i>
+            </div>
+            <h2 class="text-2xl font-bold mb-3 text-slate-900">Tài liệu Kiểm tra & Ôn tập Tổng hợp Tin học 12</h2>
+            <p class="text-slate-600 max-w-xl mx-auto mb-6">
+                Bao gồm hệ thống câu hỏi trắc nghiệm nhiều lựa chọn (ABCD) và trắc nghiệm Đúng/Sai bám sát chương trình mới (Chủ đề AI, Mạng máy tính, TCP/IP, Văn hóa mạng).
+            </p>
+            <div class="flex flex-wrap justify-center gap-4 mb-8 text-sm text-slate-500">
+                <span class="bg-slate-100 px-3 py-1 rounded-full"><i class="fa-solid fa-list-check mr-1.5 text-indigo-500"></i>100 Câu Trắc nghiệm ABCD</span>
+                <span class="bg-slate-100 px-3 py-1 rounded-full"><i class="fa-solid fa-circle-check mr-1.5 text-indigo-500"></i>10 Bài Trắc nghiệm Đúng/Sai</span>
+            </div>
+            <button onclick="startQuiz()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-8 py-3 rounded-xl transition shadow-lg shadow-indigo-200 cursor-pointer">
+                Bắt đầu làm bài ngay
+            </button>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="hidden space-y-6">
+            <!-- Navigation Tabs -->
+            <div class="flex space-x-2 bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
+                <button onclick="switchSection('mcq')" id="tab-mcq" class="flex-1 py-2.5 px-4 text-sm font-semibold rounded-lg transition bg-indigo-600 text-white shadow-sm">
+                    Phần I: Trắc nghiệm ABCD (100 câu)
+                </button>
+                <button onclick="switchSection('tf')" id="tab-tf" class="flex-1 py-2.5 px-4 text-sm font-semibold rounded-lg transition text-slate-600 hover:bg-slate-100">
+                    Phần II: Đúng / Sai (10 câu)
+                </button>
+            </div>
+
+            <!-- Question Card -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+                <div class="flex justify-between items-center mb-4 pb-4 border-b border-slate-100">
+                    <span id="question-tracker" class="text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">
+                        Câu 1 / 100
+                    </span>
+                    <span id="question-category" class="text-xs text-slate-400 font-medium">Chủ đề: Trí tuệ nhân tạo (AI)</span>
+                </div>
+
+                <h3 id="question-text" class="text-lg font-semibold text-slate-900 mb-6 leading-relaxed">
+                    Nội dung câu hỏi sẽ hiển thị ở đây...
+                </h3>
+
+                <!-- Options container -->
+                <div id="options-container" class="space-y-3">
+                    <!-- Options injected via JS -->
+                </div>
+            </div>
+
+            <!-- Quiz Controls -->
+            <div class="flex justify-between items-center bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+                <button onclick="prevQuestion()" id="prev-btn" class="px-5 py-2.5 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition font-medium disabled:opacity-40 disabled:cursor-not-allowed">
+                    <i class="fa-solid fa-arrow-left mr-2"></i> Câu trước
+                </button>
+                <div id="pagination-dots" class="hidden md:flex space-x-1 overflow-x-auto max-w-xs py-1">
+                    <!-- Dots -->
+                </div>
+                <button onclick="nextQuestion()" id="next-btn" class="px-5 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium shadow-md shadow-indigo-100">
+                    Câu tiếp <i class="fa-solid fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+            
+            <div class="text-center">
+                <button onclick="submitQuiz()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-8 py-3 rounded-xl transition shadow-lg shadow-emerald-100 cursor-pointer">
+                    Nộp bài & Xem kết quả
+                </button>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center space-y-6">
+            <div class="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl font-bold shadow-inner">
+                <i class="fa-solid fa-award"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-900">Kết quả bài làm của bạn</h2>
+            <div class="flex justify-center items-center space-x-6">
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 min-w-[140px]">
+                    <p class="text-xs text-slate-500 font-medium uppercase mb-1">Số câu đúng</p>
+                    <p id="score-text" class="text-3xl font-bold text-indigo-600">0/110</p>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 min-w-[140px]">
+                    <p class="text-xs text-slate-500 font-medium uppercase mb-1">Điểm số</p>
+                    <p id="score-percent" class="text-3xl font-bold text-emerald-600">0.0</p>
+                </div>
+            </div>
+            <p id="result-comment" class="text-slate-600 max-w-md mx-auto"></p>
+            <div class="flex justify-center space-x-4 pt-4">
+                <button onclick="reviewAnswers()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-2.5 rounded-xl transition shadow-md shadow-indigo-100">
+                    Xem lại đáp án & Giải thích
+                </button>
+                <button onclick="restartQuiz()" class="border border-slate-300 hover:bg-slate-50 text-slate-700 font-medium px-6 py-2.5 rounded-xl transition">
+                    Làm lại bài
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 mt-8 text-center text-xs text-slate-500">
+        <p>Hệ thống trắc nghiệm ôn tập Tin học 12 — Chương trình GDPT Mới (Định hướng Tin học Ứng dụng)</p>
+    </footer>
+
+    <!-- App Script -->
+    <script>
+        const mcqQuestions = [
+            { id: 1, q: "AI là viết tắt của cụm từ tiếng Anh nào?", options: ["Automated Intelligence", "Artificial Intelligence", "Advanced Internet", "Automatic Information"], correct: 1 },
+            { id: 2, q: "Sự kiện nào được coi là mốc lịch sử đánh dấu sự ra đời của thuật ngữ 'Trí tuệ nhân tạo' (AI)?", options: ["Phép thử Turing năm 1950", "Hội thảo Dartmouth năm 1956", "Robot Asimo năm 1986", "Hệ chuyên gia MYCIN năm 1972"], correct: 1 },
+            { id: 3, q: "Ai là người đưa ra phép thử nổi tiếng vào năm 1950 để đánh giá khả năng thông minh của máy tính?", options: ["Tim Berners-Lee", "Alan Turing", "Hakon Wium Lie", "John McCarthy"], correct: 1 },
+            { id: 4, q: "Mục tiêu chính của việc phát triển các ứng dụng AI là gì?", options: ["Thay thế hoàn toàn con người trong mọi lĩnh vực", "Giúp máy tính có được những năng lực trí tuệ như con người", "Tăng tốc độ kết nối Internet toàn cầu", "Thay thế ngôn ngữ lập trình truyền thống"], correct: 1 },
+            { id: 5, q: "Đâu KHÔNG phải là một trong năm đặc trưng cơ bản của AI?", options: ["Khả năng học và suy luận", "Khả năng nhận thức và hiểu ngôn ngữ", "Khả năng giải quyết vấn đề", "Khả năng cảm xúc và sinh học"], correct: 3 },
+            { id: 6, q: "Hệ thống khuyến nghị video trên YouTube thể hiện đặc trưng nào của AI?", options: ["Khả năng học", "Khả năng suy luận", "Khả năng nhận thức", "Khả năng giải quyết vấn đề"], correct: 0 },
+            { id: 7, q: "Xe tự lái sử dụng cảm biến radar và camera để phát hiện chướng ngại vật thể hiện đặc trưng nào của AI?", options: ["Khả năng học", "Khả năng nhận thức", "Khả năng hiểu ngôn ngữ", "Khả năng giải quyết vấn đề"], correct: 1 },
+            { id: 8, q: "Theo chức năng, AI được chia thành mấy loại chính?", options: ["1 loại", "2 loại (AI hẹp và AI tổng quát)", "3 loại", "4 loại"], correct: 1 },
+            { id: 9, q: "Trí tuệ nhân tạo hẹp (AI yếu) là gì?", options: ["Là AI có khả năng tự học, tự thích nghi và làm mọi việc như con người", "Là AI được thiết kế để thực hiện một nhiệm vụ cụ thể", "Là hệ thống tự động hóa đơn giản không có trí tuệ", "Là AI chỉ hoạt động khi có con người điều khiển trực tiếp"], correct: 1 },
+            { id: 10, q: "Trí tuệ nhân tạo tổng quát (AI mạnh) hiện tại có trạng thái thế nào?", options: ["Đã được ứng dụng rộng rãi trong điện thoại thông minh", "Đang là mục tiêu dài hạn, thực tế hiện vẫn chưa đạt được", "Đã thay thế hoàn toàn con người trong khoa học", "Chỉ tồn tại trong các lý thuyết toán học cũ"], correct: 1 },
+            { id: 11, q: "Hệ chuyên gia MYCIN được phát triển trong lĩnh vực nào?", options: ["Giao thông vận tải", "Y học và chẩn đoán bệnh", "Tài chính ngân hàng", "Giáo dục trực tuyến"], correct: 1 },
+            { id: 12, q: "Robot Asimo của hãng Honda xuất hiện lần đầu tiên vào năm nào?", options: ["1956", "1986", "2006", "2022"], correct: 1 },
+            { id: 13, q: "Đâu là một ví dụ về ứng dụng AI dựa trên công nghệ thị giác máy tính và nhận dạng?", options: ["Mở khóa điện thoại bằng khuôn mặt", "Ấm đun nước tự ngắt điện", "Guồng nước làm bằng tre", "Dây chuyền cơ khí lặp đi lặp lại"], correct: 0 },
+            { id: 14, q: "Phần mềm y tế nào được các chuyên gia khẳng định giúp nâng cao hiệu quả điều trị ung thư?", options: ["MYCIN", "IBM Watson for Oncology", "ChatGPT", "Google Assistant"], correct: 1 },
+            { id: 15, q: "Trợ lý ảo nào dưới đây do Apple phát triển?", options: ["Siri", "Google Assistant", "Alexa", "Bixby"], correct: 0 },
+            { id: 16, q: "Ứng dụng nhận dạng chữ viết tay của AI mang lại lợi ích gì trong thương mại điện tử?", options: ["Tự động hóa quy trình nhập dữ liệu và xử lý hóa đơn", "Tăng tốc độ đường truyền mạng", "Giảm dung lượng tệp tin văn bản", "Tạo ra các bức tranh nghệ thuật"], correct: 0 },
+            { id: 17, q: "Phát biểu nào sau đây đúng khi phân biệt AI với tự động hóa truyền thống?", options: ["Tự động hóa truyền thống có khả năng tự học từ dữ liệu lớn", "AI có sự kết hợp của các đặc trưng trí tuệ như học, suy luận, nhận thức", "Tự động hóa và AI là một khái niệm hoàn toàn giống nhau", "AI chỉ dùng cho dây chuyền lắp ráp cơ khí"], correct: 1 },
+            { id: 18, q: "Hệ chuyên gia (Expert System) là gì?", options: ["Chương trình máy tính mô phỏng khả năng ra quyết định của chuyên gia trong lĩnh vực cụ thể", "Phần mềm diệt virus cao cấp", "Trình duyệt web chuyên dụng", "Hệ thống định vị toàn cầu GPS"], correct: 0 },
+            { id: 19, q: "Trong lĩnh vực nông nghiệp thông minh, AI được ứng dụng để làm gì?", options: ["Theo dõi thời tiết, đất đai, tối ưu hóa tưới tiêu và dự đoán mùa vụ", "Lắp ráp linh kiện điện tử", "Thay thế người nông dân ra đồng thu hoạch bằng tay", "Phát triển trò chơi điện tử"], correct: 0 },
+            { id: 20, q: "'AI tạo sinh' (Generative AI) tập trung vào việc gì?", options: ["Xây dựng thuật toán tự động tạo nội dung (hình ảnh, âm thanh, văn bản)", "Chỉ chuyên kiểm tra lỗi cú pháp lập trình", "Quản lý hệ thống cáp quang dưới biển", "Định tuyến gói tin trên mạng Internet"], correct: 0 },
+            { id: 21, q: "ChatGPT là hệ thống xử lý ngôn ngữ tự nhiên do tổ chức nào phát triển?", options: ["Google", "Microsoft", "OpenAI", "Apple"], correct: 2 },
+            { id: 22, q: "Phiên bản GPT-3 của ChatGPT được huấn luyện dựa trên điều gì?", options: ["Một lượng lớn dữ liệu văn bản trên Internet (sách, bài báo, trang web)", "Chỉ các bộ luật pháp lý quốc tế", "Các bảng mã nguồn HTML và CSS", "Dữ liệu từ các thiết bị định tuyến mạng"], correct: 0 },
+            { id: 23, q: "Ngôn ngữ nào hoạt động tốt nhất và có nhiều dữ liệu huấn luyện nhất đối với ChatGPT?", options: ["Tiếng Anh", "Tiếng Việt", "Tiếng Pháp", "Tiếng Tây Ban Nha"], correct: 0 },
+            { id: 24, q: "Nguy cơ nào sau đây là rủi ro về an toàn nguy hiểm nhất của AI nếu bị lợi dụng trong xung đột?", options: ["Làm hỏng màn hình máy tính của đối phương", "Ra quyết định tấn công các mục tiêu dân sự hoặc chẩn đoán y tế sai lầm", "Làm chậm tốc độ gõ phím của binh lính", "Gây mất kết nối sóng Wi-Fi diện rộng"], correct: 1 },
+            { id: 25, q: "Vì sao cần ngăn cấm việc giao toàn quyền quyết định cho AI điều khiển vũ khí sát thương?", options: ["Vì tốn kém chi phí sản xuất", "Vì liên quan trực tiếp đến sinh mạng con người và khía cạnh đạo đức", "Vì AI không biết sử dụng súng đạn", "Vì sóng điện từ làm nhiễu vũ khí"], correct: 1 },
+            { id: 26, q: "Ứng dụng AI nào nổi bật với khả năng làm thơ, soạn nhạc, viết thư và sửa lỗi lập trình?", options: ["Google Translate", "ChatGPT", "Asimo", "MYCIN"], correct: 1 },
+            { id: 27, q: "Lĩnh vực tài chính - ngân hàng thu được lợi ích gì từ AI?", options: ["Tự động hóa cập nhật chứng từ, phát hiện ngăn chặn gian lận, hỗ trợ đầu tư", "Tự động in tiền giấy cho khách hàng", "Thay thế hoàn toàn các chi nhánh ngân hàng bằng robot", "Giảm giá cước viễn thông di động"], correct: 0 },
+            { id: 28, q: "Trong lĩnh vực giáo dục, AI giúp tạo ra điều gì?", options: ["Các nền tảng học tập cá nhân hóa và trợ lý học tập ảo hỗ trợ người học", "Các cỗ máy thi hộ học sinh tự động", "Sách giáo khoa bằng giấy tự viết chữ", "Phòng học không cần giáo viên và điện năng"], correct: 0 },
+            { id: 29, q: "Điểm hạn chế lớn của ChatGPT đối với các ngôn ngữ ít phổ biến là gì?", options: ["Không thể hiển thị trên màn hình", "Khả năng hạn chế hơn do ít dữ liệu huấn luyện", "Bắt buộc phải trả phí rất cao mới dùng được", "Chỉ dịch được sang tiếng Anh cổ"], correct: 1 },
+            { id: 30, q: "Đâu là biểu hiện của việc ứng dụng AI trong giao thông vận tải?", options: ["Phát triển phương tiện tự lái và quản lý giao thông thông minh", "Sản xuất xe đạp không xích", "Xây dựng đường ray tàu hỏa bằng gỗ", "Đo chiều dài cầu vượt bằng thước dây"], correct: 0 },
+            { id: 31, q: "Sự kết hợp giữa IoT và AI được gọi là gì?", options: ["AIoT", "NetAI", "SmartIoT", "WebAI"], correct: 0 },
+            { id: 32, q: "Bước đột phá lớn trong lĩnh vực AI vào năm 2022 gọi tên hệ thống nào?", options: ["ChatGPT", "Asimo", "MYCIN", "Windows 11"], correct: 0 },
+            { id: 33, q: "Việc kết hợp sinh học và công nghệ (kết nối bộ não con người và robot) mang lại rủi ro gì lớn nhất?", options: ["Con người bị robot kiểm soát hoặc thay đổi ý thức, hành vi không mong muốn", "Con người bị mỏi cổ khi đeo thiết bị", "Tiêu tốn nhiều nước sinh hoạt", "Làm gián đoạn sóng điện thoại"], correct: 0 },
+            { id: 34, q: "Đâu là ví dụ về ứng dụng AI sử dụng hình ảnh để tương tác với con người?", options: ["Hệ thống nhận dạng khuôn mặt (Face Recognition)", "Hệ thống tổng đài chỉ nghe âm thanh giọng nói", "Phần mềm kiểm tra lỗi chính tả thuần văn bản", "Lệnh chuyển văn bản thành tiếng nói"], correct: 0 },
+            { id: 35, q: "Hiện tượng xung đột (collision) tín hiệu trong mạng cục bộ (LAN) xảy ra khi nào?", options: ["Khi chỉ có một máy tính duy nhất gửi dữ liệu", "Khi nhiều máy tính đồng thời gửi dữ liệu lên đường truyền chung", "Khi máy tính tắt nguồn", "Khi kết nối cáp quang bị đứt hoàn toàn"], correct: 1 },
+            { id: 36, q: "Wi-Fi là chữ viết tắt của cụm từ tiếng Anh nào?", options: ["Wireless Finder", "Wireless Fidelity", "Wired Field", "Wide Fibre"], correct: 1 },
+            { id: 37, q: "Thiết bị WAP (Wireless Access Point) có chức năng chính là gì?", options: ["Kết nối các thiết bị đầu cuối qua sóng vô tuyến (Wi-Fi) vào mạng LAN", "Đổi tín hiệu số sang tương tự qua đường điện thoại", "Lưu trữ dữ liệu tổng thể của máy chủ", "In ấn tài liệu qua mạng internet"], correct: 0 },
+            { id: 38, q: "Cổng kết nối trực tiếp vào mạng LAN trên router được gọi là gì?", options: ["Cổng WAN", "Cổng LAN", "Cổng USB", "Cổng HDMI"], correct: 1 },
+            { id: 39, q: "Cổng nào trên router dùng để kết nối với mạng diện rộng (Internet)?", options: ["Cổng LAN", "Cổng WAN", "Cổng RJ45", "Cổng Nguồn"], correct: 1 },
+            { id: 40, q: "Chức năng chính của thiết bị Modem là gì?", options: ["Khuếch đại tín hiệu điện", "Chuyển đổi tín hiệu số thành tín hiệu tương tự và ngược lại", "Định tuyến đường đi cho các gói tin quốc tế", "Lưu trữ trang web thay máy chủ"], correct: 1 },
+            { id: 41, q: "Tên gọi 'Modem' là sự kết hợp của hai từ tiếng Anh nào?", options: ["Modern + Demo", "Modulation + Demodulation", "Model + Domain", "Modify + Demon"], correct: 1 },
+            { id: 42, q: "Loại cáp nào thường dùng trong mạng LAN với giắc cắm RJ45?", options: ["Cáp quang biển", "Cáp UTP (dây xoắn đôi)", "Dây điện thoại", "Cáp đồng trục"], correct: 1 },
+            { id: 43, q: "Trong mạng gia đình ít thiết bị, dùng Hub thay cho Switch nhằm mục đích gì?", options: ["Tăng tốc độ truyền gấp trăm lần", "Tiết kiệm chi phí vì Hub rẻ hơn", "Tránh hoàn toàn xung đột tín hiệu", "Để phát sóng Wi-Fi tầm xa"], correct: 1 },
+            { id: 44, q: "Loại modem nào sử dụng SIM để truy cập Internet di động (3G, 4G, 5G)?", options: ["Modem ADSL", "Modem Dial-up", "Modem GSM", "Modem cáp"], correct: 2 },
+            { id: 45, q: "Để kết nối máy tính không có card Wi-Fi vào mạng không dây, ta làm gì?", options: ["Lắp thêm card Wi-Fi hoặc dùng bộ thu Wi-Fi qua cổng USB", "Thay đổi địa chỉ MAC của bàn phím", "Cài thêm phần mềm Microsoft Word", "Dùng dây điện thoại nối vào màn hình"], correct: 0 },
+            { id: 46, q: "Biểu tượng nào trên thanh Taskbar cho phép chọn trạm phát Wi-Fi?", options: ["Biểu tượng Thư mục", "Biểu tượng Sóng mạng", "Biểu tượng Đồng hồ", "Biểu tượng Thùng rác"], correct: 1 },
+            { id: 47, q: "Tùy chọn 'Connect automatically' khi kết nối Wi-Fi có tác dụng gì?", options: ["Tự động kết nối lại mạng Wi-Fi này mỗi khi nằm trong vùng phủ sóng", "Tự động tắt máy tính khi hết pin", "Đổi mật khẩu Wi-Fi", "Xóa lịch sử truy cập web"], correct: 0 },
+            { id: 48, q: "Modem quang có chức năng chuyển đổi giữa các loại tín hiệu nào?", options: ["Tín hiệu số và tín hiệu quang", "Sóng vô tuyến và âm thanh", "Tín hiệu thoại và tivi", "Dòng điện AC và DC"], correct: 0 },
+            { id: 49, q: "Tại sao các phòng máy ở trường học thường ưu tiên dùng cáp mạng hơn Wi-Fi?", options: ["Vì cáp mạng tiện lợi, dễ di chuyển", "Vì kết nối có dây đảm bảo tốc độ ổn định, an toàn và ít bị nhiễu sóng", "Vì không mua được thiết bị Wi-Fi", "Vì học sinh không thích dùng sóng không dây"], correct: 1 },
+            { id: 50, q: "Thiết bị nào giúp giảm thiểu xung đột tín hiệu tốt hơn Hub trong LAN?", options: ["Switch", "Đèn LED", "Bàn phím", "Ổ cứng SSD"], correct: 0 },
+            { id: 51, q: "Khái niệm 'Giao thức mạng' (Network Protocol) được hiểu là gì?", options: ["Là phần mềm diệt virus trên Internet", "Là tập hợp quy định về cách thức giao tiếp để truyền dữ liệu giữa các thiết bị mạng", "Là giá cước phí Internet hàng tháng", "Là tên gọi khác của cáp quang"], correct: 1 },
+            { id: 52, q: "Giao thức nào dưới đây được sử dụng riêng cho việc gửi thư điện tử?", options: ["POP3", "IMAP", "SMTP", "HTTP"], correct: 2 },
+            { id: 53, q: "Giao thức nào được sử dụng để tải thư điện tử về máy cá nhân từ máy chủ?", options: ["SMTP", "POP3 hoặc IMAP", "IP", "TCP"], correct: 1 },
+            { id: 54, q: "Địa chỉ MAC (Media Access Control) của thiết bị mạng là gì?", options: ["Địa chỉ IP do nhà mạng cấp", "Địa chỉ vật lý gắn liền với phần cứng thiết bị mạng", "Tên tài khoản đăng nhập email", "Mật khẩu Wi-Fi"], correct: 1 },
+            { id: 55, q: "Bộ giao thức TCP/IP gồm hai giao thức quan trọng nhất trên Internet là gì?", options: ["HTTP và DNS", "IP và TCP", "SMTP và POP3", "LAN và WAN"], correct: 1 },
+            { id: 56, q: "Địa chỉ IPv4 tiêu chuẩn gồm bao nhiêu byte?", options: ["2 byte", "4 byte", "6 byte", "8 byte"], correct: 1 },
+            { id: 57, q: "Cách viết địa chỉ IP nào dưới đây theo kiểu 'dot decimal' là đúng?", options: ["192.168.1.3", "256.300.1.1", "192,168,1,3", "ABC.DEF.G.H"], correct: 0 },
+            { id: 58, q: "Chức năng chính của giao thức IP (Internet Protocol) là gì?", options: ["Quy định cách thiết lập địa chỉ cho thiết bị và định tuyến gói dữ liệu qua mạng", "Kiểm tra lỗi chính tả của văn bản", "Định dạng màu sắc trang web", "Quản lý dung lượng tệp tin"], correct: 0 },
+            { id: 59, q: "Chức năng chính của giao thức TCP là gì?", options: ["Cấp phát địa chỉ MAC", "Đảm bảo truyền dữ liệu chính xác, tin cậy theo từng ứng dụng và ráp đúng thứ tự", "Phát sóng Wi-Fi không dây", "Chuyển đổi tín hiệu số sang tương tự"], correct: 1 },
+            { id: 60, q: "Khái niệm 'Cổng ứng dụng' (Port) trong giao thức TCP dùng để làm gì?", options: ["Phân biệt dữ liệu giữa các ứng dụng đang chạy đồng thời trên máy tính", "Cắm cáp mạng RJ45", "Cấp nguồn điện cho thiết bị", "Kết nối màn hình"], correct: 0 },
+            { id: 61, q: "Giao thức DNS (Domain Name System) dùng để làm gì?", options: ["Dùng hệ thống tên bằng chữ dễ nhớ để thay thế cho địa chỉ IP", "Mã hóa mật khẩu đăng nhập", "Đo tốc độ cáp quang", "Nén dung lượng hình ảnh"], correct: 0 },
+            { id: 62, q: "Tại sao dữ liệu trên Internet lại được chia nhỏ thành các gói (packet)?", options: ["Để làm tốn bộ nhớ router", "Để nhiều cuộc truyền có thể xen kẽ trên đường truyền, tận dụng tối đa băng thông", "Vì máy tính không đọc được tệp lớn", "Bắt buộc người dùng mua thêm ổ cứng"], correct: 1 },
+            { id: 63, q: "Trong bảng định tuyến, ký hiệu dấu hoa thị (*) biểu thị điều gì?", options: ["Lỗi kết nối mạng", "Bất cứ giá trị nào (ký tự đại diện)", "Mật khẩu bảo mật", "Tốc độ bằng 0"], correct: 1 },
+            { id: 64, q: "Lệnh ping sử dụng giao thức nào để kiểm tra kết nối mạng?", options: ["ICMP", "SMTP", "FTP", "DHCP"], correct: 0 },
+            { id: 65, q: "Tổ chức nào phụ trách quản lý và cấp phép tên miền quốc gia '.vn' tại Việt Nam?", options: ["Bộ Công Thương", "Trung tâm VNNIC", "VNPT", "FPT Telecom"], correct: 1 },
+            { id: 66, q: "Nếu gói dữ liệu không có trong bảng định tuyến tĩnh, router sẽ xử lý ra sao?", options: ["Hủy bỏ vĩnh viễn gói tin ngay lập tức", "Gửi gói tin theo cổng mặc định (default gateway)", "Gửi ngược lại cho người viết mã", "Tự động đổi IP máy nhận"], correct: 1 },
+            { id: 67, q: "Phát biểu nào đúng khi so sánh địa chỉ IP và địa chỉ MAC?", options: ["Địa chỉ IP thay đổi theo vị trí mạng, còn MAC gắn liền với phần cứng không đổi", "MAC dùng trên Internet, IP chỉ dùng trong máy in", "Cả hai địa chỉ hoàn toàn giống nhau", "IP do bàn phím quy định"], correct: 0 },
+            { id: 68, q: "Đổi IP nhị phân '11000000 10101000 00000011 00000111' sang thập phân:", options: ["192.168.3.7", "10.0.0.1", "172.16.1.1", "127.0.0.1"], correct: 0 },
+            { id: 69, q: "Khái niệm Không gian mạng (thế giới ảo) được hiểu là gì?", options: ["Môi trường tạo ra nhờ mạng máy tính, trong đó Internet là lớn nhất", "Khu vực trưng bày thiết bị điện tử", "Không gian bên trong bộ vi xử lý CPU", "Mạng truyền hình cáp"], correct: 0 },
+            { id: 70, q: "Đâu KHÔNG phải là ưu điểm của giao tiếp trong không gian mạng?", options: ["Thuận tiện mọi lúc mọi nơi", "Tiết kiệm thời gian và chi phí di chuyển", "Đảm bảo 100% cảm xúc chân thật, không bị hiểu lầm", "Mở rộng kết nối xã hội"], correct: 2 },
+            { id: 71, q: "Nhược điểm lớn của giao tiếp qua văn bản/email là gì?", options: ["Tiêu tốn nhiều giấy mực", "Thiếu tín hiệu phi ngôn ngữ (nét mặt, giọng nói) dễ gây hiểu lầm", "Bắt buộc gặp mặt trực tiếp", "Không gửi được tệp đính kèm"], correct: 1 },
+            { id: 72, q: "Quyết định số 874-QĐ-BTTTT (17/6/2021) ban hành nội dung gì?", options: ["Quy tắc ứng xử trên mạng xã hội", "Luật An ninh mạng quốc gia", "Quy chuẩn kỹ thuật mạng Wi-Fi", "Khung giá cước viễn thông"], correct: 0 },
+            { id: 73, q: "4 giá trị cốt lõi trong Quy tắc ứng xử trên mạng xã hội theo Quyết định 874 bao gồm những gì?", options: ["Tôn trọng, Lịch sự, Thấu hiểu, Hỗ trợ", "Nhanh chóng, Miễn phí, Bảo mật, Tự do", "Trung thực, Cạnh tranh, Công khai, Tốc độ", "Bí mật, Nghiêm khắc, Cẩn trọng, Độc lập"], correct: 0 },
+            { id: 74, q: "Biện pháp nào giúp hình thành thói quen ứng xử nhân văn trên mạng?", options: ["Tự kiểm tra, cải thiện hành vi trực tuyến và đặt mình vào vị trí người khác", "Tạo nhiều tài khoản giả để công kích", "Không đọc bình luận của ai", "Chia sẻ tin đồn chưa kiểm chứng"], correct: 0 },
+            { id: 75, q: "Việc gửi tin nhắn rác hoặc spam quảng cáo không liên quan thể hiện điều gì?", options: ["Sự lịch sự tuyệt đối", "Hành vi thiếu lịch sự, cần tránh", "Kỹ năng CNTT xuất sắc", "Biện pháp bảo mật"], correct: 1 },
+            { id: 76, q: "Tại sao thông tin cá nhân trên mạng xã hội đôi khi thiếu tin cậy?", options: ["Vì ai cũng khai báo đúng 100%", "Vì người dùng dễ dàng giấu mặt, tạo bản sao hoặc giả mạo thông tin", "Vì không gõ được tiếng Việt", "Vì mạng quá nhanh"], correct: 1 },
+            { id: 77, q: "Khi tham gia video call trực tuyến, hành vi nào đúng chuẩn mực?", options: ["Trang phục lịch sự, thái độ đúng đắn, giữ cảnh quan phù hợp", "Bật nhạc thật to át tiếng người khác", "Vừa ăn uống vừa nói lớn", "Nằm ngủ trong buổi họp"], correct: 0 },
+            { id: 78, q: "Việc nên làm trước khi chia sẻ một bài viết lên mạng xã hội là gì?", options: ["Chia sẻ ngay lập tức", "Đọc kỹ nội dung, kiểm tra tính xác thực để không gây tổn hại danh tiếng người khác", "Sửa nội dung cho giật gân hơn", "Đổi tên tác giả thành tên mình"], correct: 1 },
+            { id: 79, q: "Rủi ro bảo mật chính khi giao tiếp trực tuyến gồm những gì?", options: ["Lộ mật khẩu, tấn công mạng, rò rỉ dữ liệu cá nhân nhạy cảm", "Máy tính sập nguồn do hết pin", "Bàn phím gõ chậm đi", "Màn hình tự đổi sang màu đen"], correct: 0 },
+            { id: 80, q: "Phát biểu nào SAI về giao tiếp trong không gian mạng?", options: ["Giúp vượt khoảng cách địa lý", "Hoàn toàn không có bất kỳ rủi ro hay nhược điểm nào", "Cung cấp nhiều công cụ đa dạng", "Tiết kiệm thời gian và chi phí đi lại"], correct: 1 },
+            { id: 81, q: "Hành vi nào vi phạm quy tắc đạo đức và văn hóa mạng?", options: ["Nhắn tin động viên bạn bè", "Dùng ngôn từ thô tục, phỉ báng, tấn công cá nhân", "Chia sẻ gương sống đẹp", "Tôn trọng quan điểm riêng của người khác"], correct: 1 },
+            { id: 82, q: "Tôn trọng tin nhắn riêng tư đòi hỏi chúng ta điều gì?", options: ["Khoe thông tin riêng cho người lạ", "Không chia sẻ nội dung trao đổi riêng cho bên thứ ba khi chưa được cho phép", "Xóa ngay lập tức", "Đăng công khai bài viết"], correct: 1 },
+            { id: 83, q: "Ý nghĩa của việc 'Đối xử với người khác theo cách mình muốn được đối xử' là gì?", options: ["Muốn được tôn trọng thì trước hết bản thân phải ứng xử tôn trọng với người khác", "Ép người khác theo ý mình", "Chỉ trích người khác trước", "Thờ ơ với cộng đồng"], correct: 0 },
+            { id: 84, q: "Biểu hiện của sự 'Thấu hiểu' trong giao tiếp mạng là gì?", options: ["Đặt mình vào vị trí của người khác để cảm thông và ứng xử hòa nhã", "Thường xuyên bắt lỗi chính tả của người khác", "Áp đặt ý kiến cá nhân lên tập thể", "Bỏ qua mọi lời khuyên bảo"], correct: 0 },
+            { id: 85, q: "Thuật ngữ 'Thế giới ảo' (Virtual World) đồng nghĩa với khái niệm nào?", options: ["Không gian mạng (Cyberspace)", "Phần mềm đồ họa Photoshop", "Màn hình hiển thị máy tính", "Trò chơi điện tử offline"], correct: 0 },
+            { id: 86, q: "Trong mô hình TCP/IP, tầng nào chịu trách nhiệm truyền dữ liệu đáng tin cậy giữa các cổng ứng dụng?", options: ["Tầng Truyền tải (Transport Layer - TCP)", "Tầng Mạng (Internet Layer - IP)", "Tầng Vật lý (Physical Layer)", "Tầng Ứng dụng (Application Layer)"], correct: 0 },
+            { id: 87, q: "Địa chỉ MAC còn được gọi là địa chỉ gì?", options: ["Địa chỉ vật lý (Physical Address)", "Địa chỉ logic (Logical Address)", "Địa chỉ tên miền (Domain Address)", "Địa chỉ thư điện tử (Email Address)"], correct: 0 },
+            { id: 88, q: "Địa chỉ IP dạng '127.0.0.1' thường được dùng để làm gì?", options: ["Địa chỉ Loopback (tự kiểm tra giao tiếp mạng trên chính máy local)", "Địa chỉ máy chủ Google", "Địa chỉ router mặc định", "Địa chỉ máy in mạng"], correct: 0 },
+            { id: 89, q: "Thiết bị Switch chuyển dữ liệu dựa trên thông tin nào trong gói tin?", options: ["Địa chỉ MAC của máy nhận", "Tên miền trang web", "Mật khẩu Wi-Fi", "Số seri bàn phím"], correct: 0 },
+            { id: 90, q: "Hub chuyển dữ liệu nhận được từ một cổng như thế nào?", options: ["Nhân bản và phát tới tất cả các cổng còn lại", "Chỉ gửi cho đúng máy nhận", "Lưu lại trong ổ cứng", "Mã hóa trước khi gửi"], correct: 0 },
+            { id: 91, q: "Mạng LAN là viết tắt của cụm từ tiếng Anh nào?", options: ["Local Area Network", "Large Area Network", "Link Access Node", "Long Area Network"], correct: 0 },
+            { id: 92, q: "Mạng WAN là viết tắt của cụm từ tiếng Anh nào?", options: ["Wide Area Network", "Web Access Network", "World Area Node", "Wireless Area Net"], correct: 0 },
+            { id: 93, q: "Thiết bị nào vừa có chức năng phát Wi-Fi, vừa định tuyến gói tin và chuyển đổi tín hiệu internet gia đình?", options: ["Router Wi-Fi tích hợp Modem", "Bàn phím không dây", "Card màn hình", "Loa Bluetooth"], correct: 0 },
+            { id: 94, q: "Trong địa chỉ IPv4 '192.168.1.1', mỗi số phân cách bởi dấu chấm đại diện cho bao nhiêu bit?", options: ["8 bit (1 byte)", "16 bit", "32 bit", "4 bit"], correct: 0 },
+            { id: 95, q: "Số lượng địa chỉ IP tối đa có thể biểu diễn bởi chuẩn IPv4 là khoảng bao nhiêu?", options: ["Khoảng 4,3 tỷ địa chỉ (2^32)", "100 triệu địa chỉ", "1 tỷ địa chỉ", "Vô hạn"], correct: 0 },
+            { id: 96, q: "Lý do chính dẫn đến sự ra đời và chuyển đổi sang chuẩn IPv6 là gì?", options: ["Địa chỉ IPv4 đang bị cạn kiệt do sự bùng nổ thiết bị kết nối Internet", "IPv4 quá nhanh", "IPv4 không chạy được Wi-Fi", "IPv4 tốn điện"], correct: 0 },
+            { id: 97, q: "Địa chỉ IPv6 có độ dài bao nhiêu bit?", options: ["128 bit", "32 bit", "64 bit", "256 bit"], correct: 0 },
+            { id: 98, q: "Khái niệm 'Tường lửa' (Firewall) trong mạng máy tính có vai trò gì?", options: ["Giám sát, kiểm soát lưu lượng mạng ra/vào dựa trên các quy tắc an ninh", "Làm mát thùng máy", "Tăng dung lượng RAM", "Đổi tên máy tính"], correct: 0 },
+            { id: 99, q: "Khi truy cập website có giao thức 'HTTPS', chữ 'S' đại diện cho từ gì?", options: ["Secure (Bảo mật)", "System", "Speed", "Server"], correct: 0 },
+            { id: 100, q: "Việc đặt mật khẩu Wi-Fi chuẩn WPA2/WPA3 giúp phòng tránh nguy cơ nào?", options: ["Truy cập trái phép và đánh cắp dữ liệu đường truyền không dây", "Hỏng màn hình", "Cháy nổ modem", "Giảm tuổi thọ pin"], correct: 0 }
+        ];
+
+        const tfQuestions = [
+            {
+                id: 1,
+                topic: "Khái niệm & Lịch sử phát triển Trí tuệ Nhân tạo (AI)",
+                statements: [
+                    { text: "Thuật ngữ 'Trí tuệ nhân tạo' chính thức ra đời tại Hội thảo Dartmouth năm 1956.", correct: true },
+                    { text: "Phép thử Turing do Alan Turing đề xuất năm 1950 dùng để đánh giá khả năng thông minh của máy tính.", correct: true },
+                    { text: "Mọi hệ thống tự động hóa cơ khí trong nhà máy đều được coi là ứng dụng AI.", correct: false },
+                    { text: "Hệ chuyên gia MYCIN ra đời thập niên 1970 được ứng dụng trong chẩn đoán y khoa.", correct: true }
+                ]
+            },
+            {
+                id: 2,
+                topic: "Phân loại & Đặc trưng cơ bản của AI",
+                statements: [
+                    { text: "Khả năng học của AI cho phép hệ thống tự điều chỉnh hành vi từ dữ liệu mới tích lũy.", correct: true },
+                    { text: "Trí tuệ nhân tạo tổng quát (AI mạnh) hiện nay đã phát triển phổ biến và vượt trội hơn con người ở mọi lĩnh vực.", correct: false },
+                    { text: "Hệ thống khuyến nghị bài hát trên Spotify hay video trên YouTube là ví dụ tiêu biểu của AI hẹp (AI yếu).", correct: true },
+                    { text: "AI tạo sinh (Generative AI) tập trung vào việc tự động tạo nội dung mới như văn bản, hình ảnh, âm thanh.", correct: true }
+                ]
+            },
+            {
+                id: 3,
+                topic: "Ứng dụng & An toàn, Đạo đức trong phát triển AI",
+                statements: [
+                    { text: "Robot Asimo do hãng Honda phát triển xuất hiện lần đầu tiên vào năm 1986.", correct: true },
+                    { text: "Các mô hình AI hay bị coi là 'hộp đen' vì tính thiếu minh bạch trong quá trình đưa ra quyết định.", correct: true },
+                    { text: "Việc giao toàn quyền quyết định điều khiển vũ khí sát thương cho AI được khuyến khích để giảm chi phí chiến tranh.", correct: false },
+                    { text: "ChatGPT do OpenAI phát triển hoạt động với chất lượng hoàn toàn như nhau ở tất cả các ngôn ngữ trên thế giới.", correct: false }
+                ]
+            },
+            {
+                id: 4,
+                topic: "Thiết bị kết nối mạng cục bộ (LAN)",
+                statements: [
+                    { text: "Hub gửi dữ liệu nhận được từ một cổng đến tất cả các cổng còn lại trong mạng.", correct: true },
+                    { text: "Switch có khả năng giảm thiểu xung đột tín hiệu tốt hơn Hub nhờ tạo các kênh truyền riêng giữa các cổng.", correct: true },
+                    { text: "Thiết bị WAP (Wireless Access Point) cho phép các thiết bị không dây kết nối vào mạng LAN.", correct: true },
+                    { text: "Dây cáp mạng UTP dùng trong mạng LAN thường sử dụng đầu kết nối RJ45.", correct: true }
+                ]
+            },
+            {
+                id: 5,
+                topic: "Thiết bị kết nối Internet & Định tuyến (Router, Modem)",
+                statements: [
+                    { text: "Modem có chức năng chính là chuyển đổi qua lại giữa tín hiệu số và tín hiệu tương tự (hoặc tín hiệu quang).", correct: true },
+                    { text: "Router gia đình thông thường chỉ có duy nhất cổng WAN và không thể phát sóng Wi-Fi.", correct: false },
+                    { text: "Cổng WAN trên router dùng để kết nối với mạng diện rộng (Internet) từ nhà cung cấp dịch vụ.", correct: true },
+                    { text: "Modem GSM sử dụng SIM điện thoại để kết nối Internet di động 3G/4G/5G.", correct: true }
+                ]
+            },
+            {
+                id: 6,
+                topic: "Giao thức mạng & Địa chỉ MAC, IP",
+                statements: [
+                    { text: "Giao thức mạng là tập hợp các quy tắc định nghĩa cách thức giao tiếp và truyền dữ liệu giữa các thiết bị.", correct: true },
+                    { text: "Địa chỉ MAC là địa chỉ vật lý cố định gắn liền với card mạng của phần cứng.", correct: true },
+                    { text: "Địa chỉ IPv4 tiêu chuẩn có độ dài 32 bit, thường được viết dưới dạng 4 số thập phân phân cách bởi dấu chấm.", correct: true },
+                    { text: "Địa chỉ IP thay đổi tùy theo vị trí kết nối mạng, trong khi địa chỉ MAC không đổi.", correct: true }
+                ]
+            },
+            {
+                id: 7,
+                topic: "Bộ giao thức TCP/IP & Dịch vụ Mạng",
+                statements: [
+                    { text: "Giao thức IP chịu trách nhiệm đánh địa chỉ và định tuyến các gói tin qua mạng.", correct: true },
+                    { text: "Giao thức TCP đảm bảo việc truyền dữ liệu tin cậy, cắt nhỏ dữ liệu thành gói và rắp nối đúng thứ tự.", correct: true },
+                    { text: "Giao thức SMTP được dùng để tải thư điện tử từ máy chủ về máy tính cá nhân.", correct: false },
+                    { text: "Giao thức DNS hỗ trợ chuyển đổi tên miền dạng chữ dễ nhớ (như google.com) sang địa chỉ IP tương ứng.", correct: true }
+                ]
+            },
+            {
+                id: 8,
+                topic: "Hoạt động truyền dữ liệu & Định tuyến trên Internet",
+                statements: [
+                    { text: "Dữ liệu trên Internet được chia nhỏ thành các gói (packet) để tối ưu hóa băng thông đường truyền.", correct: true },
+                    { text: "Lệnh ping sử dụng giao thức ICMP để kiểm tra khả năng kết nối giữa hai thiết bị mạng.", correct: true },
+                    { text: "Nếu router không tìm thấy tuyến đường trong bảng định tuyến, nó sẽ gửi gói tin qua cổng mặc định (Default Gateway).", correct: true },
+                    { text: "Ký hiệu dấu hoa thị (*) trong bảng định tuyến đại diện cho một địa chỉ MAC cụ thể.", correct: false }
+                ]
+            },
+            {
+                id: 9,
+                topic: "Văn hóa & Quy tắc ứng xử trong Không gian mạng",
+                statements: [
+                    { text: "Không gian mạng mang lại sự thuận tiện, giúp tiết kiệm thời gian và chi phí giao tiếp.", correct: true },
+                    { text: "Quyết định số 874-QĐ-BTTTT đưa ra 4 giá trị cốt lõi: Tôn trọng, Lịch sự, Thấu hiểu, Hỗ trợ.", correct: true },
+                    { text: "Việc tự ý đăng tải hình ảnh nhạy cảm hoặc bôi nhọ người khác lên mạng xã hội là hành vi chuẩn mực.", correct: false },
+                    { text: "Thiếu tín hiệu phi ngôn ngữ (ánh mắt, nét mặt) trong giao tiếp văn bản dễ dẫn đến hiểu lầm.", correct: true }
+                ]
+            },
+            {
+                id: 10,
+                topic: "An toàn thông tin & Ứng xử nhân văn trên mạng",
+                statements: [
+                    { text: "Đặt mình vào vị trí của người khác là biện pháp giúp xây dựng ứng xử nhân văn trên môi trường số.", correct: true },
+                    { text: "Giao tiếp trực tuyến tuyệt đối an toàn và không bao giờ có rủi ro lộ mật khẩu hay dữ liệu cá nhân.", correct: false },
+                    { text: "Trước khi chia sẻ thông tin trên mạng xã hội, người dùng cần kiểm tra tính xác thực của nguồn tin.", correct: true },
+                    { text: "Tôn trọng quyền riêng tư nghĩa là không phát tán nội dung tin nhắn riêng cho người khác khi chưa được phép.", correct: true }
+                ]
+            }
+        ];
+
+        let currentSection = 'mcq'; // 'mcq' or 'tf'
+        let currentIndex = 0;
+        let mcqAnswers = {}; // index -> optionIndex
+        let tfAnswers = {}; // qIndex -> { 0: true/false, 1: true/false, ... }
+        let isReviewMode = false;
+
+        function startQuiz() {
+            document.getElementById('intro-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function switchSection(sec) {
+            currentSection = sec;
+            currentIndex = 0;
+            if (sec === 'mcq') {
+                document.getElementById('tab-mcq').className = "flex-1 py-2.5 px-4 text-sm font-semibold rounded-lg transition bg-indigo-600 text-white shadow-sm";
+                document.getElementById('tab-tf').className = "flex-1 py-2.5 px-4 text-sm font-semibold rounded-lg transition text-slate-600 hover:bg-slate-100";
+            } else {
+                document.getElementById('tab-tf').className = "flex-1 py-2.5 px-4 text-sm font-semibold rounded-lg transition bg-indigo-600 text-white shadow-sm";
+                document.getElementById('tab-mcq').className = "flex-1 py-2.5 px-4 text-sm font-semibold rounded-lg transition text-slate-600 hover:bg-slate-100";
+            }
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const tracker = document.getElementById('question-tracker');
+            const cat = document.getElementById('question-category');
+            const qText = document.getElementById('question-text');
+            const optContainer = document.getElementById('options-container');
+            optContainer.innerHTML = '';
+
+            if (currentSection === 'mcq') {
+                const q = mcqQuestions[currentIndex];
+                tracker.innerText = `Câu ${currentIndex + 1} / ${mcqQuestions.length} (Phần I)`;
+                cat.innerText = "Trắc nghiệm nhiều lựa chọn (ABCD)";
+                qText.innerText = `Câu ${currentIndex + 1}: ${q.q}`;
+
+                q.options.forEach((opt, idx) => {
+                    const isSelected = mcqAnswers[currentIndex] === idx;
+                    const isCorrect = isReviewMode && q.correct === idx;
+                    const isWrongSelected = isReviewMode && isSelected && q.correct !== idx;
+
+                    let btnClass = "w-full text-left p-4 rounded-xl border transition flex items-center space-x-3 ";
+                    if (isReviewMode) {
+                        if (isCorrect) btnClass += "bg-emerald-50 border-emerald-500 text-emerald-900 font-medium";
+                        else if (isWrongSelected) btnClass += "bg-rose-50 border-rose-500 text-rose-900";
+                        else btnClass += "bg-white border-slate-200 text-slate-600 opacity-60";
+                    } else {
+                        if (isSelected) btnClass += "bg-indigo-50 border-indigo-500 text-indigo-900 font-medium shadow-sm";
+                        else btnClass += "bg-white border-slate-200 hover:border-slate-300 text-slate-700 hover:bg-slate-50";
+                    }
+
+                    const btn = document.createElement('button');
+                    btn.className = btnClass;
+                    btn.disabled = isReviewMode;
+                    btn.innerHTML = `
+                        <span class="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold ${isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'}">${String.fromCharCode(65 + idx)}</span>
+                        <span class="flex-grow">${opt}</span>
+                    `;
+                    btn.onclick = () => selectMcqOption(currentIndex, idx);
+                    optContainer.appendChild(btn);
+                });
+            } else {
+                const q = tfQuestions[currentIndex];
+                tracker.innerText = `Câu ${currentIndex + 1} / ${tfQuestions.length} (Phần II)`;
+                cat.innerText = `Chủ đề: ${q.topic}`;
+                qText.innerText = `Câu ${currentIndex + 1}: Xét các nhận định sau đây:`;
+
+                q.statements.forEach((stmt, sIdx) => {
+                    if (!tfAnswers[currentIndex]) tfAnswers[currentIndex] = {};
+                    const userVal = tfAnswers[currentIndex][sIdx];
+
+                    const div = document.createElement('div');
+                    div.className = "p-4 rounded-xl border border-slate-200 bg-white space-y-3";
+                    
+                    let stmtTextHtml = `<p class="text-sm font-medium text-slate-800"><span class="font-bold mr-2 text-indigo-600">${String.fromCharCode(97 + sIdx)})</span>${stmt.text}</p>`;
+                    if (isReviewMode) {
+                        const correctVal = stmt.correct ? 'Đúng' : 'Sai';
+                        const userValStr = userVal === true ? 'Đúng' : userVal === false ? 'Sai' : 'Chưa chọn';
+                        const isMatch = userVal === stmt.correct;
+                        stmtTextHtml += `<div class="text-xs font-semibold ${isMatch ? 'text-emerald-600' : 'text-rose-600'}">Đáp án của bạn: ${userValStr} — Đáp án chuẩn: ${correctVal}</div>`;
+                    }
+
+                    div.innerHTML = stmtTextHtml;
+
+                    const btnGroup = document.createElement('div');
+                    btnGroup.className = "flex space-x-3";
+
+                    ['Đúng', 'Sai'].forEach((choice, cIdx) => {
+                        const val = (cIdx === 0);
+                        const isSelected = userVal === val;
+                        let bClass = "flex-1 py-2 text-sm font-medium rounded-lg border transition ";
+                        if (isReviewMode) {
+                            if (stmt.correct === val) bClass += "bg-emerald-50 border-emerald-500 text-emerald-800 font-bold";
+                            else if (isSelected && stmt.correct !== val) bClass += "bg-rose-50 border-rose-500 text-rose-800";
+                            else bClass += "bg-slate-50 border-slate-200 text-slate-400 opacity-50";
+                        } else {
+                            if (isSelected) bClass += (val ? "bg-emerald-600 text-white border-emerald-600 shadow-sm" : "bg-rose-600 text-white border-rose-600 shadow-sm");
+                            else bClass += "bg-white border-slate-200 text-slate-600 hover:bg-slate-50";
+                        }
+
+                        const b = document.createElement('button');
+                        b.className = bClass;
+                        b.disabled = isReviewMode;
+                        b.innerText = choice;
+                        b.onclick = () => selectTfOption(currentIndex, sIdx, val);
+                        btnGroup.appendChild(b);
+                    });
+
+                    div.appendChild(btnGroup);
+                    optContainer.appendChild(div);
+                });
+            }
+
+            document.getElementById('prev-btn').disabled = (currentIndex === 0);
+        }
+
+        function selectMcqOption(qIdx, optIdx) {
+            mcqAnswers[qIdx] = optIdx;
+            loadQuestion();
+        }
+
+        function selectTfOption(qIdx, stmtIdx, val) {
+            if (!tfAnswers[qIdx]) tfAnswers[qIdx] = {};
+            tfAnswers[qIdx][stmtIdx] = val;
+            loadQuestion();
+        }
+
+        function prevQuestion() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                loadQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            const maxIdx = currentSection === 'mcq' ? mcqQuestions.length - 1 : tfQuestions.length - 1;
+            if (currentIndex < maxIdx) {
+                currentIndex++;
+                loadQuestion();
+            }
+        }
+
+        function submitQuiz() {
+            let totalCorrect = 0;
+            let totalItems = 100 + (tfQuestions.length * 4);
+
+            // Calculate MCQ
+            mcqQuestions.forEach((q, idx) => {
+                if (mcqAnswers[idx] === q.correct) totalCorrect++;
+            });
+
+            // Calculate TF
+            tfQuestions.forEach((q, idx) => {
+                q.statements.forEach((stmt, sIdx) => {
+                    if (tfAnswers[idx] && tfAnswers[idx][sIdx] === stmt.correct) {
+                        totalCorrect++;
+                    }
+                });
+            });
+
+            const score10 = ((totalCorrect / totalItems) * 10).toFixed(1);
+
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('score-text').innerText = `${totalCorrect} / ${totalItems}`;
+            document.getElementById('score-percent').innerText = `${score10} điểm`;
+
+            let comment = "Bạn đã hoàn thành xuất sắc bài kiểm tra!";
+            if (score10 < 5) comment = "Cần cố gắng ôn tập thêm các kiến thức trong tài liệu nhé!";
+            else if (score10 < 8) comment = "Kết quả khá tốt! Hãy rà soát lại những câu còn sai sót.";
+            document.getElementById('result-comment').innerText = comment;
+        }
+
+        function reviewAnswers() {
+            isReviewMode = true;
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            currentIndex = 0;
+            currentSection = 'mcq';
+            loadQuestion();
+        }
+
+        function restartQuiz() {
+            mcqAnswers = {};
+            tfAnswers = {};
+            isReviewMode = false;
+            currentIndex = 0;
+            currentSection = 'mcq';
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('intro-screen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
+
